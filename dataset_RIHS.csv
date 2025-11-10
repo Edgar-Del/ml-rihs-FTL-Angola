@@ -1,0 +1,97 @@
+ID_Hotel,Hotel_Name,Location,Price_per_Night_USD,Rating,Avaliação_Clientes,Energia_Renovável_%,Gestão_Resíduos_Índice,Consumo_Água_por_Hóspede,Possui_Selo_Sustentável,Distância_do_Centro_km,Região,Índice_Sustentabilidade_Global
+1,Hotel EcoStay 1,Rome, Italy,330,4,4.0,82,94,282,False,15.1,Europa,0.72
+2,Hotel EcoStay 2,Paris, France,176,2,4.9,29,57,209,True,4.7,Europa,0.45
+3,Hotel EcoStay 3,Tokyo, Japan,51,2,2.6,90,78,249,True,24.3,Ásia,0.73
+4,Hotel EcoStay 4,Cape Town, South Africa,84,5,3.7,100,70,214,True,1.8,África,0.79
+5,Hotel EcoStay 5,Rio de Janeiro, Brazil,24,5,4.5,8,72,209,False,11.1,América do Sul,0.43
+6,Hotel EcoStay 6,Rome, Italy,322,2,4.8,35,69,183,False,10.7,Europa,0.49
+7,Hotel EcoStay 7,Madrid, Spain,149,4,2.6,17,63,241,True,23.2,Europa,0.40
+8,Hotel EcoStay 8,Paris, France,268,4,4.9,84,99,161,False,14.8,Europa,0.81
+9,Hotel EcoStay 9,Berlin, Germany,281,4,3.2,28,34,124,True,24.7,Europa,0.46
+10,Hotel EcoStay 10,Paris, France,174,3,2.5,10,27,242,False,15.2,Europa,0.29
+11,Hotel EcoStay 11,Tokyo, Japan,260,4,4.8,72,91,91,True,1.8,Ásia,0.85
+12,Hotel EcoStay 12,Rome, Italy,100,3,4.3,85,54,272,True,24.3,Europa,0.69
+13,Hotel EcoStay 13,Cape Town, South Africa,286,4,3.1,13,46,216,False,3.0,África,0.42
+14,Hotel EcoStay 14,Cape Town, South Africa,92,5,3.7,95,23,230,False,13.6,África,0.63
+15,Hotel EcoStay 15,Rio de Janeiro, Brazil,8,2,3.2,85,47,145,False,7.5,América do Sul,0.66
+16,Hotel EcoStay 16,Nairobi, Kenya,163,4,3.0,83,49,269,False,20.2,África,0.61
+17,Hotel EcoStay 17,Berlin, Germany,260,5,3.2,26,81,200,False,21.5,Europa,0.56
+18,Hotel EcoStay 18,Rome, Italy,250,4,3.5,36,70,251,True,4.4,Europa,0.52
+19,Hotel EcoStay 19,Paris, France,288,4,2.7,57,71,91,True,12.5,Europa,0.73
+20,Hotel EcoStay 20,Lisbon, Portugal,130,3,2.6,1,21,299,True,7.1,Europa,0.24
+21,Hotel EcoStay 21,Lisbon, Portugal,170,3,3.7,31,89,239,False,2.2,Europa,0.60
+22,Hotel EcoStay 22,Paris, France,167,3,4.5,68,89,293,False,2.4,Europa,0.68
+23,Hotel EcoStay 23,Lisbon, Portugal,253,3,3.0,92,22,227,True,5.7,Europa,0.63
+24,Hotel EcoStay 24,Tokyo, Japan,176,3,2.7,32,59,207,False,21.0,Ásia,0.49
+25,Hotel EcoStay 25,Berlin, Germany,180,4,4.2,6,35,169,False,13.0,Europa,0.40
+26,Hotel EcoStay 26,Lisbon, Portugal,34,5,4.9,68,56,239,False,8.6,Europa,0.61
+27,Hotel EcoStay 27,Cape Town, South Africa,176,4,4.7,23,73,199,False,21.3,África,0.58
+28,Hotel EcoStay 28,Lisbon, Portugal,146,4,2.5,88,44,172,True,7.8,Europa,0.70
+29,Hotel EcoStay 29,Luanda, Angola,339,4,5.0,99,52,147,True,8.3,África,0.83
+30,Hotel EcoStay 30,Rio de Janeiro, Brazil,33,4,3.3,47,95,266,True,6.8,América do Sul,0.69
+31,Hotel EcoStay 31,Madrid, Spain,285,3,4.7,26,46,100,False,14.5,Europa,0.57
+32,Hotel EcoStay 32,Lisbon, Portugal,381,4,3.9,63,68,96,False,11.9,Europa,0.76
+33,Hotel EcoStay 33,Nairobi, Kenya,35,3,2.5,23,65,260,False,24.5,África,0.43
+34,Hotel EcoStay 34,Rio de Janeiro, Brazil,44,3,3.0,32,86,207,True,10.0,América do Sul,0.62
+35,Hotel EcoStay 35,Madrid, Spain,96,5,2.7,31,66,165,True,6.5,Europa,0.58
+36,Hotel EcoStay 36,Tokyo, Japan,302,5,2.8,47,58,249,False,20.3,Ásia,0.52
+37,Hotel EcoStay 37,Berlin, Germany,42,2,2.5,35,64,99,False,17.6,Europa,0.60
+38,Hotel EcoStay 38,Cape Town, South Africa,172,3,2.7,86,82,165,True,4.0,África,0.78
+39,Hotel EcoStay 39,Madrid, Spain,377,5,3.1,41,89,94,True,3.4,Europa,0.74
+40,Hotel EcoStay 40,Lisbon, Portugal,322,4,3.0,4,87,85,True,13.4,Europa,0.65
+41,Hotel EcoStay 41,Cape Town, South Africa,340,3,2.8,29,38,224,True,11.0,África,0.47
+42,Hotel EcoStay 42,Tokyo, Japan,258,3,2.7,8,31,208,True,4.1,Ásia,0.42
+43,Hotel EcoStay 43,Luanda, Angola,125,4,4.3,0,35,268,False,13.9,África,0.29
+44,Hotel EcoStay 44,Madrid, Spain,304,2,3.9,50,76,108,True,1.3,Europa,0.73
+45,Hotel EcoStay 45,Lisbon, Portugal,135,5,4.3,75,35,297,False,20.2,Europa,0.51
+46,Hotel EcoStay 46,Rio de Janeiro, Brazil,64,4,4.1,9,88,179,True,9.5,América do Sul,0.66
+47,Hotel EcoStay 47,Tokyo, Japan,176,4,4.6,68,23,95,True,16.1,Ásia,0.62
+48,Hotel EcoStay 48,Lisbon, Portugal,208,5,3.9,49,54,203,True,20.3,Europa,0.60
+49,Hotel EcoStay 49,Nairobi, Kenya,297,3,4.9,73,62,123,True,5.5,África,0.79
+50,Hotel EcoStay 50,Luanda, Angola,282,2,4.2,80,27,172,False,0.8,África,0.63
+51,Eco Hotel USA 1,San Francisco, USA,495,5,4.3,65,50,192,True,3.4,América do Norte,0.64
+52,Eco Hotel USA 2,Boston, USA,432,4,4.3,26,82,91,False,28.2,América do Norte,0.66
+53,Eco Hotel USA 3,Los Angeles, USA,251,5,4.0,62,51,178,True,18.5,América do Norte,0.64
+54,Eco Hotel USA 4,Orlando, USA,247,3,3.6,51,91,140,True,29.5,América do Norte,0.74
+55,Eco Hotel USA 5,Houston, USA,190,5,4.2,77,68,107,False,29.0,América do Norte,0.81
+56,Eco Hotel USA 6,Los Angeles, USA,324,2,3.1,96,89,288,False,25.1,América do Norte,0.66
+57,Eco Hotel USA 7,Miami, USA,265,3,3.0,8,31,223,True,17.2,América do Norte,0.39
+58,Eco Hotel USA 8,Los Angeles, USA,277,4,3.5,18,77,104,True,6.3,América do Norte,0.63
+59,Eco Hotel USA 9,Houston, USA,249,3,3.5,86,82,113,True,8.8,América do Norte,0.87
+60,Eco Hotel USA 10,Houston, USA,216,5,2.7,75,38,177,True,9.2,América do Norte,0.63
+61,Eco Hotel USA 11,Miami, USA,140,4,4.5,9,70,117,False,18.9,América do Norte,0.61
+62,Eco Hotel USA 12,Los Angeles, USA,92,2,3.3,92,66,188,False,8.6,América do Norte,0.63
+63,Eco Hotel USA 13,Miami, USA,286,3,4.3,5,34,231,False,15.9,América do Norte,0.37
+64,Eco Hotel USA 14,Orlando, USA,101,4,3.0,56,33,240,False,16.4,América do Norte,0.43
+65,Eco Hotel USA 15,Chicago, USA,72,2,3.2,90,57,155,False,9.2,América do Norte,0.71
+66,Eco Hotel USA 16,Seattle, USA,193,4,3.0,88,59,279,False,24.3,América do Norte,0.56
+67,Eco Hotel USA 17,Houston, USA,290,5,3.2,31,91,210,False,25.9,América do Norte,0.64
+68,Eco Hotel USA 18,San Francisco, USA,257,4,3.5,41,80,261,True,5.5,América do Norte,0.61
+69,Eco Hotel USA 19,Boston, USA,292,4,2.7,62,81,101,True,15.2,América do Norte,0.81
+70,Eco Hotel USA 20,New York, USA,160,3,2.6,6,31,143,True,10.7,América do Norte,0.45
+71,Eco Hotel USA 21,New York, USA,462,4,3.8,94,61,287,True,20.3,América do Norte,0.65
+72,Eco Hotel USA 22,Boston, USA,182,3,4.5,73,99,228,False,24.1,América do Norte,0.80
+73,Eco Hotel USA 23,Houston, USA,183,4,4.2,7,49,276,True,21.5,América do Norte,0.44
+74,Eco Hotel USA 24,Miami, USA,207,4,2.9,37,69,217,False,25.2,América do Norte,0.58
+75,Eco Hotel USA 25,Houston, USA,493,5,4.7,11,45,179,False,15.7,América do Norte,0.52
+76,Eco Hotel USA 26,New York, USA,61,5,4.9,73,66,249,False,10.5,América do Norte,0.63
+77,Eco Hotel USA 27,Miami, USA,206,4,4.7,28,83,209,False,25.6,América do Norte,0.67
+78,Eco Hotel USA 28,New York, USA,479,5,4.0,93,54,182,True,9.5,América do Norte,0.76
+79,Eco Hotel USA 29,Los Angeles, USA,369,4,5.0,37,97,122,False,5.8,América do Norte,0.72
+80,Eco Hotel USA 30,Boston, USA,443,4,4.3,37,77,293,False,19.3,América do Norte,0.56
+81,Eco Hotel USA 31,Denver, USA,297,4,4.9,55,83,97,False,23.9,América do Norte,0.78
+82,Eco Hotel USA 32,New York, USA,343,4,4.7,65,77,236,False,23.2,América do Norte,0.66
+83,Eco Hotel USA 33,New York, USA,231,5,4.9,10,66,113,True,16.8,América do Norte,0.63
+84,Eco Hotel USA 34,Miami, USA,247,5,3.2,89,61,250,True,5.5,América do Norte,0.67
+85,Eco Hotel USA 35,Houston, USA,282,5,4.8,50,53,203,False,29.7,América do Norte,0.57
+86,Eco Hotel USA 36,Los Angeles, USA,186,4,4.7,21,62,226,False,11.1,América do Norte,0.55
+87,Eco Hotel USA 37,Orlando, USA,306,4,3.1,28,42,149,False,15.3,América do Norte,0.53
+88,Eco Hotel USA 38,Chicago, USA,380,2,3.5,18,44,181,False,13.4,América do Norte,0.48
+89,Eco Hotel USA 39,Denver, USA,110,4,3.9,26,87,147,True,1.6,América do Norte,0.67
+90,Eco Hotel USA 40,Denver, USA,330,3,2.8,12,82,149,True,18.9,América do Norte,0.64
+91,Eco Hotel USA 41,Chicago, USA,321,2,3.8,51,84,257,False,29.3,América do Norte,0.59
+92,Eco Hotel USA 42,Orlando, USA,217,2,3.5,23,87,272,True,5.9,América do Norte,0.60
+93,Eco Hotel USA 43,San Francisco, USA,186,4,3.5,62,30,123,True,3.3,América do Norte,0.72
+94,Eco Hotel USA 44,Houston, USA,296,3,4.9,68,92,158,False,12.9,América do Norte,0.80
+95,Eco Hotel USA 45,Orlando, USA,203,3,2.8,33,98,136,True,25.7,América do Norte,0.69
+96,Eco Hotel USA 46,Chicago, USA,263,2,4.4,89,68,
