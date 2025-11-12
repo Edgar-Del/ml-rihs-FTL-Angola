@@ -178,6 +178,24 @@ O RECOMENDADOR resolve essa lacuna ao integrar sustentabilidade, inovação e de
 
 Para contribuir, abra uma issue ou pull request. Respeite as boas práticas de desenvolvimento (commits descritivos, testes, documentação).
 
+## Actualizações Recentes
+
+- Carregamento do modelo na inicialização da API via [`SustainabilityModel.load_model`](app/models.py) (instância em [`app/main.py`](app/main.py) — ver chamada a `model.load_model`).
+- Endpoints principais:
+  - `/health` e `/` (status e metadata) implementados em [`app/main.py`](app/main.py).
+  - `/predict` implementado em [`app/main.py`](app/main.py) e validado pelos schemas [`PredictionInput`](app/schemas.py) e [`PredictionOutput`](app/schemas.py).
+- Implementada lógica de predição em [`SustainabilityModel`](app/models.py) com ordem de features definida em `feature_names`.
+- Testes de integração/unitários adicionados: [tests/test_api.py](tests/test_api.py) (ver cobertura para endpoints `/predict`, `/health`, `/model/info`).
+- Scripts úteis:
+  - Deploy/GCP: [scripts/deploy.sh](scripts/deploy.sh)
+  - Testes da API via curl: [scripts/test_api.sh](scripts/test_api.sh)
+- Docker:
+  - Healthcheck e execução via [Dockerfile](Dockerfile).
+- Dependências actualizadas em [requirements.txt](requirements.txt).
+
+Apresentação final do projecto:
+https://docs.google.com/presentation/d/1XFYV1Dxyd5v2mT_CjlS3-si8l9LzA2Pz8KRgmTLbQmU/edit?usp=sharing
+
 ## Contacto
 
 **Grupo 1 - Bootcamp FTL UNDP Angola 2025**
