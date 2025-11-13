@@ -6,7 +6,7 @@ set -e
 
 # Valores padrão
 HOST=${HOST:-0.0.0.0}
-PORT=${PORT:-8080}
+PORT=${PORT:-8000}
 WORKERS=${WORKERS:-1}
 
 # Log de configuração

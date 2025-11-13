@@ -1,0 +1,38 @@
+# .gcloudignore
+.gcloudignore
+.git
+.gitignore
+README.md
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Logs
+*.log
+logs/
+docker_logs/
+
+# Testes
+.coverage
+.pytest_cache/
+.mypy_cache/
+htmlcov/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo

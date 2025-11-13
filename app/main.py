@@ -88,6 +88,21 @@ async def health_check():
     )
 
 
+    """Endpoint para métricas do Prometheus"""
+    try:
+        from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+        from fastapi.responses import Response
+        return Response(
+            generate_latest(),
+            media_type=CONTENT_TYPE_LATEST
+        )
+    except ImportError:
+        raise HTTPException(
+            status_code=501, 
+            detail="Métricas não disponíveis"
+        )
+    
+
 @app.post("/predict", response_model=PredictionOutput)
 async def predict(
     input_data: PredictionInput,

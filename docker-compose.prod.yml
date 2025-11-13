@@ -11,7 +11,7 @@ services:
     image: rihs-api:prod
     container_name: rihs-api-prod
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     environment:
       # IMPORTANTE: Configure estas variáveis via .env ou secrets
       - API_KEY=${API_KEY}

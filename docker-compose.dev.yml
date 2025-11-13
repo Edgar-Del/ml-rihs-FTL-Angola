@@ -11,7 +11,7 @@ services:
     image: rihs-api:dev
     container_name: rihs-api-dev
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     environment:
       - API_KEY=dev-api-key
       - MODEL_REGISTRY_PATH=./models/latest/sustainability_classification_pipeline.pkl
@@ -33,7 +33,7 @@ services:
       # Montar logs
       - ./logs:/app/logs
     restart: unless-stopped
-    command: ["uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", "8000", "--reload"]
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
     networks:
       - rihs-network
 
