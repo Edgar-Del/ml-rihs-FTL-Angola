@@ -22,6 +22,12 @@ def load_model(path: str):
         return model, target
     except FileNotFoundError:
         logging.warning("Model not found at %s, attempting fallback...", target)
+        # Tenta carregar sustainability_classification_pipeline.pkl no mesmo diretório
+        pipeline_path = target.parent / "sustainability_classification_pipeline.pkl"
+        if pipeline_path.exists():
+            fallback = joblib.load(pipeline_path)
+            logging.info("Fallback model loaded from %s", pipeline_path)
+            return fallback, pipeline_path
         # Tenta carregar rihs_model.pkl no mesmo diretório
         rihs_model_path = target.parent / "rihs_model.pkl"
         if rihs_model_path.exists():
@@ -33,10 +39,19 @@ def load_model(path: str):
             fallback = joblib.load(FALLBACK_MODEL_PATH)
             logging.info("Fallback model loaded from %s", FALLBACK_MODEL_PATH)
             return fallback, FALLBACK_MODEL_PATH
-        logging.error("Fallback model not found at %s or %s", rihs_model_path, FALLBACK_MODEL_PATH)
+        logging.error("Fallback model not found at %s, %s or %s", pipeline_path, rihs_model_path, FALLBACK_MODEL_PATH)
         raise
     except Exception as exc:  # pylint: disable=broad-except
         logging.warning("Model loading failed: %s, attempting fallback...", exc)
+        # Tenta carregar sustainability_classification_pipeline.pkl no mesmo diretório
+        pipeline_path = target.parent / "sustainability_classification_pipeline.pkl"
+        if pipeline_path.exists():
+            try:
+                fallback = joblib.load(pipeline_path)
+                logging.info("Fallback model loaded from %s", pipeline_path)
+                return fallback, pipeline_path
+            except Exception as fallback_exc:  # pylint: disable=broad-except
+                logging.warning("Fallback model also failed: %s", fallback_exc)
         # Tenta carregar rihs_model.pkl no mesmo diretório quando há erro de deserialização
         rihs_model_path = target.parent / "rihs_model.pkl"
         if rihs_model_path.exists():

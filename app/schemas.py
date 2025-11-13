@@ -47,6 +47,8 @@ class PredictionOutput(BaseModel):
     prediction: int
     probabilities: List[float]
     prediction_label: str
+    confidence: float = Field(..., description="Confiança da predição em percentagem")
+    all_probabilities: Dict[str, float] = Field(..., description="Todas as probabilidades mapeadas para nomes de classes")
     model_version: str
 
 

@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     HOST: str = "0.0.0.0"
     PORT: int = 8080
     DEBUG: bool = False
-    MODEL_REGISTRY_PATH: str = "./models/latest/model.pkl"
+    MODEL_REGISTRY_PATH: str = "./models/latest/sustainability_classification_pipeline.pkl"
     METADATA_FILE: str = "./models/metadata.json"
     API_KEY: str = Field(..., min_length=3)
     CORS_ORIGINS: Union[str, List[str]] = Field(default="*")
@@ -57,6 +57,16 @@ class Settings(BaseSettings):
         if isinstance(value, str):
             return [value] if value else ["*"]
         return value if isinstance(value, list) else ["*"]
+
+    @field_validator("DEBUG", mode="before")
+    @classmethod
+    def parse_debug(cls, value):
+        """Aceita strings booleanas como 'true', 'false', '1', '0'."""
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            return value.lower() in ("true", "1", "yes", "on")
+        return bool(value)
 
     @field_validator("API_KEY")
     @classmethod

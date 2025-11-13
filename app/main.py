@@ -68,7 +68,6 @@ app.add_middleware(
 
 init_metrics(app)
 
-
 @app.get("/")
 async def root():
     """Endpoint raiz"""
@@ -120,7 +119,11 @@ async def predict(
         # Faz predição
         prediction_result = model.predict(features)
         
-        logger.info(f"Predição realizada: {prediction_result['prediction_label']}")
+        logger.info(
+            f"Predição realizada: {prediction_result['prediction_label']} "
+            f"(classe {prediction_result['prediction']}) com "
+            f"{prediction_result['confidence']}% de confiança"
+        )
         
         return PredictionOutput(**prediction_result)
     except HTTPException as http_exc:
