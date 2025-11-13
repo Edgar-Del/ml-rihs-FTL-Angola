@@ -4,6 +4,7 @@
 set -e
 
 API_URL="${1:-http://localhost:8080}"
+API_KEY="${API_KEY:-change-me}"
 
 echo "🧪 Testando API em: $API_URL"
 
@@ -13,12 +14,14 @@ curl -s "$API_URL/health" | jq . || echo "Resposta: $(curl -s $API_URL/health)"
 
 # Testa informações do modelo
 echo -e "\n2. Testando informações do modelo..."
-curl -s "$API_URL/model/info" | jq . || echo "Resposta: $(curl -s $API_URL/model/info)"
+curl -s "$API_URL/model/info" \
+  -H "X-API-KEY: ${API_KEY}" | jq . || echo "Resposta: $(curl -s -H \"X-API-KEY: ${API_KEY}\" $API_URL/model/info)"
 
 # Testa predição
 echo -e "\n3. Testando predição..."
 curl -X POST "$API_URL/predict" \
   -H "Content-Type: application/json" \
+  -H "X-API-KEY: ${API_KEY}" \
   -d '{
     "price_per_night_usd": 150.0,
     "rating": 4.2,
@@ -44,6 +47,6 @@ curl -X POST "$API_URL/predict" \
     "total_sust_score": 0.85,
     "price_category": 2,
     "water_consumption_ratio": 0.7
-  }' | jq . || echo "Resposta: $(curl -s -X POST ...)"
+  }' | jq . || echo "Resposta: $(curl -s -X POST \"$API_URL/predict\" -H \"Content-Type: application/json\" -H \"X-API-KEY: ${API_KEY}\" -d '{...}')"
 
 echo -e "\nTestes concluídos!"

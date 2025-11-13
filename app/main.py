@@ -1,12 +1,17 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
 import logging
-from typing import Dict
+import uvicorn
 
 from app.config import settings
 from app.models import SustainabilityModel
 from app.schemas import PredictionInput, PredictionOutput, HealthResponse
+from app.utils import (
+    init_metrics,
+    normalize_features,
+    validate_feature_payload,
+    verify_api_key,
+)
 
 # Configura logging
 logging.basicConfig(level=logging.INFO)
@@ -26,9 +31,11 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
+
+init_metrics(app)
 
 # Instância global do modelo
 model = SustainabilityModel()
@@ -39,11 +46,19 @@ async def startup_event():
     """Carrega o modelo na inicialização"""
     logger.info(f"Iniciando {settings.APP_NAME} v{settings.VERSION}")
     
-    success = model.load_model(settings.MODEL_PATH)
+    success = model.load_model(
+        registry_path=settings.MODEL_REGISTRY_PATH,
+        version=settings.MODEL_VERSION,
+        fallback_version=settings.MODEL_FALLBACK_VERSION,
+        metadata_file=settings.METADATA_FILE,
+    )
     if success:
         logger.info("Modelo carregado com sucesso")
     else:
         logger.error("Falha ao carregar o modelo")
+
+    if settings.API_KEY is None:
+        logger.warning("API_KEY não configurada. Endpoints protegidos irão retornar erro 500.")
 
 
 @app.get("/")
@@ -67,7 +82,10 @@ async def health_check():
 
 
 @app.post("/predict", response_model=PredictionOutput)
-async def predict(input_data: PredictionInput):
+async def predict(
+    input_data: PredictionInput,
+    _: None = Depends(verify_api_key),
+):
     """
     Endpoint para classificar sustentabilidade de hotel
     
@@ -78,23 +96,25 @@ async def predict(input_data: PredictionInput):
         if not model.is_loaded():
             raise HTTPException(status_code=503, detail="Modelo não carregado")
         
-        # Converte input para dict
-        features = input_data.dict()
-        
+        features = normalize_features(input_data.to_feature_dict())
+        validate_feature_payload(features)
+
         # Faz predição
         prediction_result = model.predict(features)
         
         logger.info(f"Predição realizada: {prediction_result['prediction_label']}")
         
         return PredictionOutput(**prediction_result)
-        
+    except ValueError as err:
+        logger.warning("Payload inválido recebido: %s", err)
+        raise HTTPException(status_code=400, detail=str(err)) from err
     except Exception as e:
         logger.error(f"Erro no endpoint /predict: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
 
 
-@app.get("/model/info")
-async def model_info():
+@app.get("/model/info", dependencies=[Depends(verify_api_key)])
+async def model_info():  # pragma: no cover - serialização simples
     """Retorna informações sobre o modelo"""
     if not model.is_loaded():
         raise HTTPException(status_code=503, detail="Modelo não carregado")
@@ -103,8 +123,18 @@ async def model_info():
         "model_loaded": model.is_loaded(),
         "feature_names": model.feature_names,
         "class_labels": model.class_labels,
-        "version": settings.VERSION
+        "version": model.model_version,
+        "metadata": model.metadata,
     }
+
+
+@app.get("/metadata", dependencies=[Depends(verify_api_key)])
+async def metadata():
+    """Expõe metadados do modelo carregado."""
+    if not model.is_loaded():
+        raise HTTPException(status_code=503, detail="Modelo não carregado")
+
+    return model.metadata or {"version": model.model_version}
 
 
 if __name__ == "__main__":

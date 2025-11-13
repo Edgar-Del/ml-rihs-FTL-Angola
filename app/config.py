@@ -1,6 +1,6 @@
-import os
 from typing import List
-from pydantic import BaseSettings
+
+from pydantic import BaseSettings, Field, field_validator
 
 
 class Settings(BaseSettings):
@@ -16,21 +16,30 @@ class Settings(BaseSettings):
     PORT: int = 8080
     
     # Model
-    MODEL_PATH: str = "models/hotel_sustainability_classifier.pkl"
-    MODEL_VERSION: str = "1.0.0"
+    MODEL_REGISTRY_PATH: str = Field(default="models")
+    MODEL_VERSION: str = Field(default="latest")
+    MODEL_FALLBACK_VERSION: str = Field(default="baseline")
+    METADATA_FILE: str = Field(default="models/metadata.json")
     
     # GCP
     PROJECT_ID: str = ""
     REGION: str = "europe-west1"
     
     # Security
-    API_KEY: str = "your-api-key-here"
+    API_KEY: str | None = None
     
     # CORS
-    CORS_ORIGINS: List[str] = ["*"]
+    CORS_ORIGINS: List[str] = Field(default_factory=lambda: ["https://painel-sustentavel.org"])
     
     class Config:
         env_file = ".env"
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def _split_origins(cls, value):
+        if isinstance(value, str):
+            return [item.strip() for item in value.split(",") if item.strip()]
+        return value
 
 
 # Instância global das configurações

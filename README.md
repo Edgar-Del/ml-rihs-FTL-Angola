@@ -1,206 +1,215 @@
 # Recomendador Inteligente de Hospedagem Sustentável
 
-## Visão Geral
-
-Plataforma digital baseada em **Inteligência Artificial e Machine Learning** que identifica, classifica e recomenda hospedagens sustentáveis em Angola, promovendo práticas ecológicas, consumo responsável e turismo consciente.
-
-Este projecto alinha-se aos Objectivos de Desenvolvimento Sustentável (ODS):
-- **ODS 8**: Trabalho Decente e Crescimento Económico
-- **ODS 12**: Consumo e Produção Responsáveis
-- **ODS 13**: Acção Climática
+API de inferência em FastAPI que classifica o nível de sustentabilidade de hotéis angolanos com base em indicadores ambientais, sociais e económicos. O serviço está pronto para execução em produção com Docker + GCP Cloud Run, autenticação por API key, observabilidade Prometheus e versionamento de modelos com fallback seguro.
 
 ---
 
-## Problema e Oportunidade
+## Estado Actual do Projecto
 
-Alojamentos sustentáveis em Angola — pousadas, lodges e quintas ecológicas com práticas responsáveis — permanecem **invisíveis** nas plataformas digitais internacionais. Viajantes conscientes não conseguem identificar facilmente opções verdes, enquanto empreendedores comprometidos com a sustentabilidade têm pouca visibilidade e reconhecimento.
+**✅ Implementado**
+- API FastAPI (`/`, `/health`, `/predict`, `/model/info`, `/metadata`, `/metrics`)
+- Normalização ASCII das features e validação obrigatória antes da inferência
+- Modelo `scikit-learn` serializado com `joblib` e carregamento resiliente (metadata + fallback)
+- Autenticação via header `X-API-KEY` e CORS restrito por domínio
+- Métricas Prometheus expostas automaticamente (`prometheus-fastapi-instrumentator`)
+- Pipeline de testes (`pytest --cov`) com cobertura mínima de 90%
+- Deploy containerizado (Dockerfile) e script oficial `scripts/deploy.sh` para GCP Cloud Run
+- Workflow de CI (`.github/workflows/test.yml`) executa lint/test em cada push
 
-O RECOMENDADOR resolve essa lacuna ao integrar sustentabilidade, inovação e desenvolvimento local num único ecossistema digital.
-
----
-
-## Principais Funcionalidades
-
-- **Classificação Inteligente**: Algoritmos de ML analisam indicadores ambientais, sociais e económicos
-- **EcoScore**: Atribui pontuação de 0 a 100 para cada alojamento baseada em sustentabilidade
-- **Recomendações Personalizadas**: Combina preferências do viajante com atributos de sustentabilidade
-- **Análise de Sentimentos (NLP)**: Extrai insights sobre práticas verdes de comentários online
-- **Visualização Interativa**: Mapas ecológicos e dashboards educativos
-- **Transparência**: Explicações claras sobre por que cada alojamento é recomendado
-
----
-
-## Stack Tecnológico
-
-### Backend & Machine Learning
-- **Python** com Pandas, NumPy, Scikit-learn, XGBoost
-- **NLP**: BERT, DistilBERT (HuggingFace Transformers)
-- **FastAPI**: Serviço de inferência REST
-- **MLflow**: Tracking de experimentos e model registry
-- **Apache Airflow**: Orquestração de pipelines ETL
-
-### Armazenamento & Dados
-- **PostgreSQL + PostGIS**: Dados tabulares e geoespaciais
-- **AWS S3 / MongoDB**: Data Lake para dados não estruturados
-- **DVC**: Versionamento de datasets
-
-### Frontend & Visualização
-- **Next.js + React**: Interface responsiva
-- **TailwindCSS**: Estilização
-- **Mapbox GL JS**: Visualização geoespacial
-- **Chart.js / Recharts**: Gráficos interativos
-
-### Infraestrutura
-- **Docker**: Contêinerização
-- **Kubernetes (EKS/GKE)**: Orquestração em produção
-- **Prometheus + Grafana**: Monitoramento
-- **GitHub Actions**: CI/CD
+**🚧 Próximos Passos**
+- Pipeline de dados (Airflow) e tracking de experimentos (MLflow)
+- Frontend (Next.js) e dashboards interactivos
+- Integração com bases externas e ingestão contínua (TripAdvisor, Booking, EcoBnb)
+- Monitorização distribuída (Grafana) e alertas automáticos
+- A/B testing de modelos e explainability (SHAP/LIME) expostos via API
 
 ---
 
-## Arquitetura
+## Arquitectura Técnica
 
 ```
-┌─────────────────┐
-│   Colecta de    │
-│     Dados       │
-│ (APIs, Scraping)│
-└────────┬────────┘
-         │
-         ↓
-┌─────────────────────────────┐
-│   Armazenamento & ETL       │
-│ (PostgreSQL, S3, Airflow)   │
-└────────┬────────────────────┘
-         │
-         ↓
-┌─────────────────────────────┐
-│  Pré-processamento &        │
-│  Feature Engineering        │
-└────────┬────────────────────┘
-         │
-         ↓
-┌─────────────────────────────┐
-│  Machine Learning Models    │
-│ (RF, XGBoost, LR + NLP)    │
-└────────┬────────────────────┘
-         │
-         ↓
-┌─────────────────────────────┐
-│  API FastAPI                │
-│  (/predict, /feedback)      │
-└────────┬────────────────────┘
-         │
-         ↓
-┌─────────────────────────────┐
-│  Frontend (Next.js)         │
-│  Dashboards & Mapa          │
-└─────────────────────────────┘
+┌───────────────────────────────────────────────────────────────┐
+│                       Cliente (seguro)                        │
+│   - Painel interno (Next.js) / Integrações B2B                │
+│   - Autenticação via X-API-KEY                                │
+└───────────────┬───────────────────────────────────────────────┘
+                │
+                ▼
+┌───────────────────────────────────────────────────────────────┐
+│                         FastAPI (app/)                        │
+│   • Normalização & validação de payloads                      │
+│   • Endpoints REST + métricas Prometheus                      │
+│   • Carregamento resiliente de modelos                        │
+└───────────────┬────────────────────┬──────────────────────────┘
+                │                    │
+                │                    │
+                ▼                    ▼
+    Modelo scikit-learn      Observabilidade & Segurança
+   (models/latest/model)     (Prometheus, API Key, CORS)
+
 ```
 
 ---
 
-## Fontes de Dados
+## Estrutura de Pastas
 
-### Primárias
-- **TripAdvisor**: Avaliações textuais e ratings
-- **Booking.com**: Dados estruturados de localização e comodidades
-- **EcoBnb**: Base de alojamentos sustentáveis
-- **GreenHotelWorld / Green Key**: Dados de certificações verdes
-
-### Secundárias
-- **Kaggle**: Datasets de hotelaria e turismo
-- **UNWTO**: Indicadores macro de turismo
-- **OpenStreetMap**: Dados geoespaciais
-- **ERA5 / Climate Data Store**: Variáveis climáticas
-
----
-
-## Variáveis Principais
-
-| Variável | Descrição | Fonte |
-|----------|-----------|-------|
-| Pegada de Carbono (kg CO₂/noite) | Estimativa de emissões por hóspede | EcoBnb, cálculos próprios |
-| % Energia Renovável | Percentagem de energia limpa utilizada | Booking, EcoBnb |
-| Política de Reciclagem | Sim/Não/Parcial | TripAdvisor, GreenHotelWorld |
-| Sentimento Ambiental | Score NLP de comentários | NLP analysis |
-| Localização | Coordenadas e proximidade a parques | OSM |
-| Preço Médio/Noite | Valor normalizado | Booking |
-| **EcoScore** | Índice composto final (0-100) | Ponderação múltipla |
-
----
-
-## Modelos de Machine Learning
-
-### Abordagem Supervisionada
-- **Random Forest**: Baseline robusto e interpretável
-- **XGBoost**: Modelo de alta performance em dados tabulares
-- **Logistic Regression**: Baseline simples para comparação
-
-### Avaliação
-- **Métricas**: Precision@k, Recall@k, NDCG, ROC-AUC, F1-score
-- **Validação**: Time-aware split (80/20), k-fold stratificado
-- **Tuning**: Optuna (busca bayesiana) + GridSearchCV
-- **Explicabilidade**: SHAP, LIME
+```
+project_root/
+├── app/
+│   ├── config.py
+│   ├── main.py
+│   ├── models.py
+│   ├── schemas.py
+│   └── utils/
+│       ├── __init__.py
+│       ├── feature_aliases.py
+│       ├── logging.py
+│       ├── metrics.py
+│       ├── security.py
+│       └── validation.py
+├── models/
+│   ├── baseline/model.pkl
+│   ├── latest/model.pkl
+│   └── metadata.json
+├── scripts/
+│   └── deploy.sh
+├── tests/
+│   ├── conftest.py
+│   ├── test_health.py
+│   ├── test_model.py
+│   └── test_predict.py
+├── Dockerfile
+├── requirements.txt
+└── .github/workflows/test.yml
+```
 
 ---
 
-## Impacto Esperado
+## Requisitos
 
-### Social
-- Fomentar consciência ecológica entre turistas
-- Valorizar empreendimentos locais sustentáveis
-- Criar empregos verdes e decentes
-
-### Económico
-- Aumentar procura por hospedagens sustentáveis
-- Impulsionar micro e pequenas empresas
-- Diversificar economia através do turismo verde
-
-### Ambiental
-- Reduzir pegada de carbono do turismo
-- Estimular eficiência energética e reciclagem
-- Preservar ecossistemas locais
+- Python 3.10+
+- Docker 24+
+- Conta GCP com Cloud Run + Cloud Build habilitados
 
 ---
 
-## Próximos Passos
+## Configuração Local
 
-1. **Colecta piloto de dados** em províncias-chave (Namibe, Benguela, Huíla)
-2. **Validação empírica** com alojamentos e turistas reais
-3. **Parcerias** com Ministério da Cultura e Turismo
-4. **Desenvolvimento de versão open source** para reutilização em África
-5. **Escalabilidade** para outros países da África Austral
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+cp .env.example .env   # (crie este ficheiro com base nas variáveis abaixo)
+```
+
+`.env` mínimo:
+```
+API_KEY=insira-uma-chave-secreta
+CORS_ORIGINS=https://painel-sustentavel.org
+MODEL_VERSION=latest
+```
+
+---
+
+## Execução
+
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+```
+
+Endpoints úteis:
+- `http://localhost:8080/` – metadata do serviço
+- `http://localhost:8080/health` – health check (público)
+- `http://localhost:8080/predict` – classificação (requer `X-API-KEY`)
+- `http://localhost:8080/metrics` – métricas Prometheus
+
+---
+
+## Testes e Qualidade
+
+```bash
+pytest --cov=app --cov=tests --cov-report=term-missing
+```
+
+A pipeline de CI (`.github/workflows/test.yml`) garante:
+- Instalação de dependências
+- Execução de `pytest` com cobertura
+- Falha de build se cobertura < 90%
+
+---
+
+## Observabilidade
+
+- Métricas HTTP expostas via `/metrics` (Prometheus format)
+- Latência, contagem e status por endpoint automaticamente instrumentados
+- Logs estruturados via `logging` Python
+- Recomendado: configurar `gcloud logging read` ou forward para Stackdriver/Grafana
+
+---
+
+## Deploy em GCP Cloud Run
+
+```bash
+# Autentique-se uma vez
+gcloud auth login
+gcloud auth configure-docker
+
+# Deploy (ambiente dev com tag baseada na data)
+./scripts/deploy.sh dev
+
+# Deploy produção com tag fixa
+PROJECT_ID=ftl-tourism-ai API_KEY=chave-prod ./scripts/deploy.sh prod v1.2.0
+```
+
+O script:
+- Usa Cloud Build para criar a imagem
+- Publica e faz deploy em Cloud Run com autoscaling controlado
+- Injeta `API_KEY` e `MODEL_VERSION` como variáveis de ambiente
+- Valida o health check automaticamente após o deploy
+
+---
+
+## Segurança
+
+- Header obrigatório `X-API-KEY` para endpoints sensíveis (`/predict`, `/model/info`, `/metadata`)
+- `API_KEY` nunca é hardcoded: configurável via `.env` ou variável de ambiente
+- CORS restrito a `https://painel-sustentavel.org` (configurável pelo ambiente)
+- Recomenda-se utilizar Secret Manager na infraestrutura final
+
+---
+
+## Versionamento de Modelos
+
+- Metadados centralizados em `models/metadata.json`
+- Estrutura de pastas `models/<versao>/model.pkl`
+- Fallback automático: `MODEL_VERSION` → `default_version` → `MODEL_FALLBACK_VERSION` → `legacy`
+- Endpoint `/metadata` expõe `trained_at`, métricas e versão activa
+
+---
+
+## Roadmap Futuro
+
+- **Dados & Orquestração**: Airflow, pipelines incrementais e DVC para datasets
+- **Experimentação**: MLflow registry, comparação automática e aprovação de modelos
+- **Explainability**: Geração de SHAP/LIME com endpoint específico
+- **Infraestrutura**: Terraform para infra como código, Grafana dashboards, alertas PagerDuty
+- **Produto**: Recomendador personalizado com preferências do utilizador final
 
 ---
 
 ## Contribuição
 
-Para contribuir, abra uma issue ou pull request. Respeite as boas práticas de desenvolvimento (commits descritivos, testes, documentação).
+1. Crie um fork do repositório
+2. Abra uma branch (`git checkout -b feat/nova-funcionalidade`)
+3. Garanta que `pytest --cov` passa
+4. Abra um Pull Request com descrição detalhada
 
-## Actualizações Recentes
+---
 
-- Carregamento do modelo na inicialização da API via [`SustainabilityModel.load_model`](app/models.py) (instância em [`app/main.py`](app/main.py) — ver chamada a `model.load_model`).
-- Endpoints principais:
-  - `/health` e `/` (status e metadata) implementados em [`app/main.py`](app/main.py).
-  - `/predict` implementado em [`app/main.py`](app/main.py) e validado pelos schemas [`PredictionInput`](app/schemas.py) e [`PredictionOutput`](app/schemas.py).
-- Implementada lógica de predição em [`SustainabilityModel`](app/models.py) com ordem de features definida em `feature_names`.
-- Testes de integração/unitários adicionados: [tests/test_api.py](tests/test_api.py) (ver cobertura para endpoints `/predict`, `/health`, `/model/info`).
-- Scripts úteis:
-  - Deploy/GCP: [scripts/deploy.sh](scripts/deploy.sh)
-  - Testes da API via curl: [scripts/test_api.sh](scripts/test_api.sh)
-- Docker:
-  - Healthcheck e execução via [Dockerfile](Dockerfile).
-- Dependências actualizadas em [requirements.txt](requirements.txt).
+## Equipa
 
-Apresentação final do projecto:
-https://docs.google.com/presentation/d/1XFYV1Dxyd5v2mT_CjlS3-si8l9LzA2Pz8KRgmTLbQmU/edit?usp=sharing
-
-## Contacto
-
-**Grupo 1 - Bootcamp FTL UNDP Angola 2025**
-
-Membros:
+**Grupo 1 - Bootcamp Frontier Tech Leaders UNDP Angola 2025**
 - Arsénio Eurico Muassangue
 - Edgar Delfino Tchissingui
 - Francisco Adão Vika Manuel
@@ -210,6 +219,6 @@ Membros:
 
 ## Referências
 
-- UNWTO. (2023). Tourism for Development
-- UNDP. (2022). Tourism and Sustainable Development Goals
-- UNEP. (2021). Making Tourism More Sustainable
+- UNWTO (2023) – Tourism for Development
+- UNDP (2022) – Tourism and Sustainable Development Goals
+- UNEP (2021) – Making Tourism More Sustainable

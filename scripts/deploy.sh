@@ -1,98 +1,78 @@
 #!/bin/bash
 
-# Script de deploy para FinalProjectFTL
-set -e
+# Script de deploy para o Recomendador Inteligente de Hospedagem Sustentável.
+# Uso:
+#   ./scripts/deploy.sh [dev|staging|prod] [IMAGE_TAG]
 
-echo "Iniciando deploy do FinalProjectFTL..."
+set -euo pipefail
 
-# Configurações (edite estas variáveis)
-PROJECT_ID="seu-projeto-id"
-REGION="Africa"
-SERVICE_NAME="hotel-sustainability-api"
-IMAGE_TAG="v1.0.0"
+ENVIRONMENT="${1:-dev}"
+IMAGE_TAG="${2:-$(date +%Y%m%d%H%M%S)}"
 
-# Cores para output
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-NC='\033[0m'
+PROJECT_ID="${PROJECT_ID:-ftl-tourism-ai}"
+REGION="${REGION:-europe-west1}"
+SERVICE_NAME_BASE="${SERVICE_NAME_BASE:-recomendador-sustentavel}"
 
-# Função para imprimir com cor
-print_status() {
-    echo -e "${GREEN}✓${NC} $1"
-}
-
-print_warning() {
-    echo -e "${YELLOW}⚠${NC} $1"
-}
-
-print_error() {
-    echo -e "${RED}✗${NC} $1"
-}
-
-# Verifica se gcloud está autenticado
-if ! gcloud auth list --filter=status:ACTIVE --format="value(account)" | grep -q "@"; then
-    print_error "gcloud não está autenticado. Execute 'gcloud auth login' primeiro."
+case "$ENVIRONMENT" in
+  dev)
+    SERVICE_NAME="${SERVICE_NAME_BASE}-dev"
+    MIN_INSTANCES="${MIN_INSTANCES:-0}"
+    MAX_INSTANCES="${MAX_INSTANCES:-2}"
+    ;;
+  staging)
+    SERVICE_NAME="${SERVICE_NAME_BASE}-stg"
+    MIN_INSTANCES="${MIN_INSTANCES:-0}"
+    MAX_INSTANCES="${MAX_INSTANCES:-3}"
+    ;;
+  prod)
+    SERVICE_NAME="${SERVICE_NAME_BASE}"
+    MIN_INSTANCES="${MIN_INSTANCES:-1}"
+    MAX_INSTANCES="${MAX_INSTANCES:-5}"
+    ;;
+  *)
+    echo "Ambiente inválido: ${ENVIRONMENT}. Utilize dev, staging ou prod."
     exit 1
+    ;;
+esac
+
+if [[ -z "${PROJECT_ID}" ]]; then
+  echo "Variável PROJECT_ID não definida."
+  exit 1
 fi
 
-# Define projeto
-print_status "Configurando projeto: $PROJECT_ID"
-gcloud config set project $PROJECT_ID
-
-# Habilita APIs necessárias
-print_status "Habilitando APIs..."
-gcloud services enable run.googleapis.com
-gcloud services enable containerregistry.googleapis.com
-gcloud services enable artifactregistry.googleapis.com
-
-# Cria repositório no Artifact Registry se não existir
-print_status "Configurando Artifact Registry..."
-if ! gcloud artifacts repositories describe $SERVICE_NAME --location=$REGION &>/dev/null; then
-    gcloud artifacts repositories create $SERVICE_NAME \
-        --repository-format=docker \
-        --location=$REGION \
-        --description="Repositório Docker para Hotel Sustainability API"
+if ! gcloud auth list --filter=status:ACTIVE --format="value(account)" | grep -q "@"; then
+  echo "gcloud não autenticado. Execute 'gcloud auth login'."
+  exit 1
 fi
 
-# Build da imagem Docker
-print_status "Construindo imagem Docker..."
-docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$SERVICE_NAME/$SERVICE_NAME:$IMAGE_TAG .
+gcloud config set project "${PROJECT_ID}"
 
-# Push da imagem
-print_status "Enviando imagem para Artifact Registry..."
-docker push $REGION-docker.pkg.dev/$PROJECT_ID/$SERVICE_NAME/$SERVICE_NAME:$IMAGE_TAG
+IMAGE="gcr.io/${PROJECT_ID}/${SERVICE_NAME}:${IMAGE_TAG}"
 
-# Deploy no Cloud Run
-print_status "Realizando deploy no Cloud Run..."
-gcloud run deploy $SERVICE_NAME \
-    --image $REGION-docker.pkg.dev/$PROJECT_ID/$SERVICE_NAME/$SERVICE_NAME:$IMAGE_TAG \
-    --region $REGION \
-    --platform managed \
-    --allow-unauthenticated \
-    --memory 512Mi \
-    --cpu 1 \
-    --set-env-vars "MODEL_PATH=models/hotel_sustainability_classifier.pkl" \
-    --min-instances 0 \
-    --max-instances 5
+echo "==> Construindo imagem ${IMAGE}"
+gcloud builds submit --tag "${IMAGE}"
 
-# Obtém URL do serviço
-SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --region $REGION --format="value(status.url)")
+echo "==> Fazendo deploy no Cloud Run (${ENVIRONMENT})"
+gcloud run deploy "${SERVICE_NAME}" \
+  --image "${IMAGE}" \
+  --region "${REGION}" \
+  --platform managed \
+  --allow-unauthenticated \
+  --memory 512Mi \
+  --cpu 1 \
+  --min-instances "${MIN_INSTANCES}" \
+  --max-instances "${MAX_INSTANCES}" \
+  --set-env-vars "API_KEY=${API_KEY:-change-me},MODEL_VERSION=${MODEL_VERSION:-latest}"
 
-print_status "Deploy concluído com sucesso!"
-echo ""
-echo "URL do serviço: $SERVICE_URL"
-echo "Documentação: $SERVICE_URL/docs"
-echo "Health check: $SERVICE_URL/health"
+SERVICE_URL="$(gcloud run services describe "${SERVICE_NAME}" --region "${REGION}" --format="value(status.url)")"
 
-# Testa o health check
-print_status "Testando health check..."
-sleep 10
-if curl -f "$SERVICE_URL/health" > /dev/null 2>&1; then
-    print_status "Health check passou!"
+echo "==> Deploy concluído: ${SERVICE_URL}"
+echo "    Documentação Swagger: ${SERVICE_URL}/docs"
+echo "    Métricas Prometheus:  ${SERVICE_URL}/metrics"
+
+echo "==> Verificando health check..."
+if curl -fsS "${SERVICE_URL}/health" > /dev/null; then
+  echo "Health check OK"
 else
-    print_warning "Health check falhou - verifique os logs"
+  echo "Health check falhou - veja 'gcloud run logs read ${SERVICE_NAME}'"
 fi
-
-echo ""
-print_status "Deploy finalizado! A API está pronta para uso."
