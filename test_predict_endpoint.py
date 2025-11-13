@@ -45,27 +45,27 @@ def test_predict():
     print("=" * 80)
     
     # 1. Verificar se a API está rodando
-    print("\n1. Verificando se a API está rodando...")
+    print("\n1. Verificando se a API está a rodar...")
     try:
         response = requests.get(f"{API_URL}/health", timeout=5)
         if response.status_code == 200:
             health_data = response.json()
-            print(f"   ✓ API está rodando")
+            print(f"   ✓ API está a rodar")
             print(f"   Status: {health_data.get('status')}")
             print(f"   Modelo carregado: {health_data.get('model_loaded')}")
             if not health_data.get('model_loaded'):
-                print("   ⚠️  AVISO: Modelo não está carregado!")
+                print("AVISO: Modelo não está carregado!")
                 return
         else:
-            print(f"   ❌ API retornou status {response.status_code}")
+            print(f"API retornou status {response.status_code}")
             return
     except requests.exceptions.ConnectionError:
-        print(f"   ❌ Não foi possível conectar à API em {API_URL}")
+        print(f"  Não foi possível conectar à API em {API_URL}")
         print(f"   Certifique-se de que a API está rodando:")
         print(f"   uvicorn app.main:app --host 0.0.0.0 --port 8080")
         return
     except Exception as e:
-        print(f"   ❌ Erro ao verificar API: {e}")
+        print(f"Erro ao verificar API: {e}")
         return
     
     # 2. Testar /predict sem API key (deve falhar)
@@ -78,11 +78,11 @@ def test_predict():
         )
         print(f"   Status: {response.status_code}")
         if response.status_code in [422, 403]:
-            print("   ✓ Rejeição correta (sem API key)")
+            print("   ✓ Rejeição correcta (sem API key)")
         else:
-            print(f"   ⚠️  Resposta inesperada: {response.text[:200]}")
+            print(f"Resposta inesperada: {response.text[:200]}")
     except Exception as e:
-        print(f"   ❌ Erro: {e}")
+        print(f"Erro: {e}")
     
     # 3. Testar /predict com API key (deve funcionar)
     print("\n3. Testando /predict com API key...")
@@ -112,15 +112,15 @@ def test_predict():
                 print(f"     {class_name}: {prob:.4f} ({prob*100:.2f}%)")
             print(f"\n   Probabilidades brutas: {result.get('probabilities')}")
         elif response.status_code == 503:
-            print("   ❌ Modelo não está carregado (503 Service Unavailable)")
+            print(" Modelo não está carregado (503 Service Unavailable)")
         elif response.status_code == 403:
-            print("   ❌ API key inválida (403 Forbidden)")
+            print("API key inválida (403 Forbidden)")
             print(f"   Verifique se API_KEY no .env corresponde à usada aqui")
         else:
-            print(f"   ❌ Erro: {response.status_code}")
+            print(f"Erro: {response.status_code}")
             print(f"   Resposta: {response.text[:500]}")
     except Exception as e:
-        print(f"   ❌ Erro ao fazer requisição: {e}")
+        print(f"Erro ao fazer requisição: {e}")
     
     # 4. Testar com payload mínimo (deve funcionar se todas as features forem fornecidas)
     print("\n4. Testando com diferentes valores...")
