@@ -124,7 +124,10 @@ class SustainabilityModel:
             artifact_path = model_info.get("artifact_path")
 
             if artifact_path:
+                # Se o caminho no metadata for relativo, resolvê-lo a partir do registry
                 path = Path(artifact_path)
+                if not path.is_absolute():
+                    path = registry_path / path
             else:
                 path = registry_path / version / "model.pkl"
 
