@@ -1,9 +1,3 @@
-# .gcloudignore
-.gcloudignore
-.git
-.gitignore
-README.md
-
 # Python
 __pycache__/
 *.pyc
@@ -15,24 +9,54 @@ env/
 venv/
 .venv/
 
-# Docker
-Dockerfile
-docker-compose.yml
-.dockerignore
+# Package and dependency directories
+lib/
+lib64/
+include/
+local/
+bin/
+pip-selfcheck.json
 
-# Logs
-*.log
-logs/
-docker_logs/
-
-# Testes
-.coverage
-.pytest_cache/
-.mypy_cache/
-htmlcov/
-
-# IDEs
+# Jupyter and IDE
+.ipynb_checkpoints/
 .vscode/
 .idea/
 *.swp
 *.swo
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+docs/
+*.md
+
+# Logs
+*.log
+logs/
+
+# Testing
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+
+# Environment files
+.env
+.env.local
+
+# macOS
+.DS_Store
+
+# Cloud and build files
+.gcloudignore
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Monitoring
+monitoring/
+prometheus-data/
+grafana-data/
