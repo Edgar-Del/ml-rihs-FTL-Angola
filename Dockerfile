@@ -108,8 +108,8 @@ ENV PATH=/home/appuser/.local/bin:$PATH \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONHASHSEED=random \
-    PORT=8080 \
-    HOST=0.0.0.0
+    PORT=8000 \
+    HOST=127.0.0.1
 
 # Cria estrutura de diretórios necessária
 RUN mkdir -p /app/logs /app/models && \

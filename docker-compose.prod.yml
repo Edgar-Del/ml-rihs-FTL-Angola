@@ -11,7 +11,7 @@ services:
     image: rihs-api:prod
     container_name: rihs-api-prod
     ports:
-      - "8080:8080"
+      - "8000:8000"
     environment:
       # IMPORTANTE: Configure estas variáveis via .env ou secrets
       - API_KEY=${API_KEY}
@@ -22,7 +22,7 @@ services:
       - DEBUG=false
       - ENVIRONMENT=production
       - HOST=0.0.0.0
-      - PORT=8080
+      - PORT=8000
       - PYTHONUNBUFFERED=1
       - PYTHONDONTWRITEBYTECODE=1
     volumes:
