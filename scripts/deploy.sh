@@ -62,7 +62,7 @@ gcloud run deploy "${SERVICE_NAME}" \
   --cpu 1 \
   --min-instances "${MIN_INSTANCES}" \
   --max-instances "${MAX_INSTANCES}" \
-  --set-env-vars "API_KEY=${API_KEY:-change-me},MODEL_VERSION=${MODEL_VERSION:-latest}"
+  --set-env-vars "API_KEY=${API_KEY:-change-me},MODEL_REGISTRY_PATH=${MODEL_REGISTRY_PATH:-./models/latest/model.pkl},METADATA_FILE=${METADATA_FILE:-./models/metadata.json},CORS_ORIGINS=${CORS_ORIGINS:-https://painel-sustentavel.org}"
 
 SERVICE_URL="$(gcloud run services describe "${SERVICE_NAME}" --region "${REGION}" --format="value(status.url)")"
 

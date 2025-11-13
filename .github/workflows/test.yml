@@ -25,10 +25,27 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      - name: Prepare env file
+        run: |
+          cat <<'EOF' > .env
+          ENVIRONMENT=ci
+          MODEL_REGISTRY_PATH=models/latest/model.pkl
+          METADATA_FILE=models/metadata.json
+          API_KEY=ci-test-key
+          CORS_ORIGINS=https://localhost
+          LOG_LEVEL=INFO
+          EOF
+
+      - name: Validate environment
+        run: |
+          chmod +x scripts/validate_env.sh
+          ./scripts/validate_env.sh
 
       - name: Run tests
         env:
           API_KEY: ci-test-key
+          MODEL_REGISTRY_PATH: models/latest/model.pkl
+          METADATA_FILE: models/metadata.json
         run: |
           pytest --cov=app --cov=tests --cov-fail-under=90 --cov-report=term-missing
 

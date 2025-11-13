@@ -1,9 +1,12 @@
+from contextlib import asynccontextmanager
+import logging
+from pathlib import Path
+
+import uvicorn
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import logging
-import uvicorn
 
-from app.config import settings
+from core.settings import settings
 from app.models import SustainabilityModel
 from app.schemas import PredictionInput, PredictionOutput, HealthResponse
 from app.utils import (
@@ -14,51 +17,56 @@ from app.utils import (
 )
 
 # Configura logging
-logging.basicConfig(level=logging.INFO)
+LOG_LEVEL = getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO)
+logging.basicConfig(level=LOG_LEVEL)
 logger = logging.getLogger(__name__)
 
-# Cria aplicação FastAPI
+model = SustainabilityModel()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info(f"Iniciando {settings.APP_NAME} v{settings.VERSION}")
+    
+    # Só tenta carregar o modelo se ainda não estiver carregado (útil para testes)
+    if not model.is_loaded():
+        success = model.load(
+            model_path=settings.MODEL_REGISTRY_PATH,
+            metadata_path=settings.METADATA_FILE,
+        )
+        if success:
+            logger.info("Modelo carregado com sucesso")
+        else:
+            logger.error("Falha ao carregar o modelo")
+    else:
+        logger.info("Modelo já estava carregado (provavelmente injectado para testes)")
+    
+    if settings.API_KEY is None:
+        logger.warning("API_KEY não configurada. Endpoints protegidos irão retornar erro 500.")
+    yield
+    # teardown (se necessário)
+
+
+# Cria aplicação FastAPI com lifespan
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.VERSION,
     description="API para classificação de sustentabilidade de hotéis",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
 # Configura CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
 init_metrics(app)
-
-# Instância global do modelo
-model = SustainabilityModel()
-
-
-@app.on_event("startup")
-async def startup_event():
-    """Carrega o modelo na inicialização"""
-    logger.info(f"Iniciando {settings.APP_NAME} v{settings.VERSION}")
-    
-    success = model.load_model(
-        registry_path=settings.MODEL_REGISTRY_PATH,
-        version=settings.MODEL_VERSION,
-        fallback_version=settings.MODEL_FALLBACK_VERSION,
-        metadata_file=settings.METADATA_FILE,
-    )
-    if success:
-        logger.info("Modelo carregado com sucesso")
-    else:
-        logger.error("Falha ao carregar o modelo")
-
-    if settings.API_KEY is None:
-        logger.warning("API_KEY não configurada. Endpoints protegidos irão retornar erro 500.")
 
 
 @app.get("/")
@@ -93,6 +101,16 @@ async def predict(
     de sustentabilidade com probabilidades.
     """
     try:
+        model_path = Path(settings.MODEL_REGISTRY_PATH)
+        fallback_path = getattr(model, "loaded_path", None)
+        if not model_path.exists() and not (fallback_path and Path(fallback_path).exists()):
+            logger.error("Modelo indisponível em %s", model_path)
+            raise HTTPException(status_code=503, detail="Model unavailable")
+
+        if not settings.API_KEY:
+            logger.error("API key não configurada no servidor")
+            raise HTTPException(status_code=403, detail="API key missing")
+
         if not model.is_loaded():
             raise HTTPException(status_code=503, detail="Modelo não carregado")
         

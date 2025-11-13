@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict
 
-import joblib
 import numpy as np
 
 from app.utils.feature_aliases import CANONICAL_FEATURES
@@ -14,6 +12,7 @@ from app.utils.validation import (
     normalize_features,
     validate_feature_payload,
 )
+from ml.model_loader import load_metadata, load_model
 
 logger = logging.getLogger(__name__)
 
@@ -33,34 +32,36 @@ class SustainabilityModel:
         }
         self.metadata: Dict[str, Any] = {}
         self.model_version: str = "desconhecido"
+        self.loaded_path: Path | None = None
 
-    def load_model(
-        self,
-        registry_path: str,
-        version: str,
-        fallback_version: str,
-        metadata_file: str,
-    ) -> bool:
-        """Carrega o modelo com suporte a metadata e fallback."""
+    def load(self, model_path: str, metadata_path: str) -> bool:
         try:
-            metadata = self._load_metadata(Path(metadata_file))
-            target_path, resolved_version = self._resolve_artifact(
-                metadata, Path(registry_path), version, fallback_version
-            )
+            self.model, resolved_path = load_model(model_path)
+            self.loaded_path = resolved_path
+            metadata = load_metadata(metadata_path)
+            selected_metadata = metadata
+            version = metadata.get("version", "unknown")
 
-            if target_path is None or not target_path.exists():
-                logger.error("Nenhum artefacto de modelo disponível para carregar.")
-                return False
+            models_info = metadata.get("models")
+            if isinstance(models_info, dict):
+                for candidate_version, info in models_info.items():
+                    artifact = info.get("artifact_path")
+                    if artifact and Path(artifact).resolve() == resolved_path.resolve():
+                        selected_metadata = {**info, "version": candidate_version}
+                        version = candidate_version
+                        break
+                else:
+                    default_version = metadata.get("default_version")
+                    if default_version and default_version in models_info:
+                        info = models_info[default_version]
+                        selected_metadata = {**info, "version": default_version}
+                        version = default_version
 
-            logger.info("Carregando modelo de %s (versão %s)", target_path, resolved_version)
-            self.model = joblib.load(target_path)
-            self.metadata = metadata.get("models", {}).get(resolved_version, {})
-            self.metadata["version"] = resolved_version
-            self.model_version = resolved_version
-            logger.info("Modelo carregado com sucesso!")
+            self.metadata = selected_metadata
+            self.model_version = version
             return True
         except Exception as exc:  # pylint: disable=broad-except
-            logger.exception("Erro ao carregar modelo: %s", exc)
+            logger.error("Erro ao carregar modelo principal: %s", exc)
             self.model = None
             return False
 
@@ -91,59 +92,3 @@ class SustainabilityModel:
     def is_loaded(self) -> bool:
         """Verifica se o modelo está carregado."""
         return self.model is not None
-
-    @staticmethod
-    def _load_metadata(metadata_path: Path) -> Dict[str, Any]:
-        if metadata_path.exists():
-            with metadata_path.open(encoding="utf-8") as metadata_file:
-                return json.load(metadata_file)
-        logger.warning("Arquivo de metadata não encontrado em %s", metadata_path)
-        return {}
-
-    @staticmethod
-    def _resolve_artifact(
-        metadata: Dict[str, Any],
-        registry_path: Path,
-        requested_version: str,
-        fallback_version: str,
-    ) -> Tuple[Optional[Path], str]:
-        models_metadata: Dict[str, Dict[str, Any]] = metadata.get("models", {})
-        default_version = metadata.get("default_version")
-
-        candidate_order = [
-            requested_version,
-            default_version,
-            fallback_version,
-        ]
-
-        for version in candidate_order:
-            if not version:
-                continue
-
-            model_info = models_metadata.get(version, {})
-            artifact_path = model_info.get("artifact_path")
-
-            if artifact_path:
-                # Se o caminho no metadata for relativo, resolvê-lo a partir do registry
-                path = Path(artifact_path)
-                if not path.is_absolute():
-                    path = registry_path / path
-            else:
-                path = registry_path / version / "model.pkl"
-
-            if path.exists():
-                return path, version
-
-        # fallback final: procurar primeiro artefato existente
-        for version, model_info in models_metadata.items():
-            artifact_path = model_info.get("artifact_path")
-            path = Path(artifact_path) if artifact_path else registry_path / version / "model.pkl"
-            if path.exists():
-                return path, version
-
-        # compatibilidade retroativa com caminho antigo
-        legacy_path = registry_path / "hotel_sustainability_classifier.pkl"
-        if legacy_path.exists():
-            return legacy_path, "legacy"
-
-        return None, "desconhecido"

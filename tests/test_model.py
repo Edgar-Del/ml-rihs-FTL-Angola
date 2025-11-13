@@ -41,11 +41,9 @@ def test_load_model_with_metadata(tmp_path):
     _write_metadata(metadata_path, "v1", artifact_path)
 
     model = SustainabilityModel()
-    assert model.load_model(
-        registry_path=str(registry_path),
-        version="v1",
-        fallback_version="baseline",
-        metadata_file=str(metadata_path),
+    assert model.load(
+        model_path=str(artifact_path),
+        metadata_path=str(metadata_path),
     )
     assert model.is_loaded()
     assert model.model_version == "v1"
@@ -61,11 +59,9 @@ def test_predict_normalizes_features(tmp_path):
     _write_metadata(metadata_path, "v2", artifact_path)
 
     model = SustainabilityModel()
-    assert model.load_model(
-        registry_path=str(registry_path),
-        version="v2",
-        fallback_version="baseline",
-        metadata_file=str(metadata_path),
+    assert model.load(
+        model_path=str(artifact_path),
+        metadata_path=str(metadata_path),
     )
 
     payload = {feature: float(idx) for idx, feature in enumerate(CANONICAL_FEATURES)}

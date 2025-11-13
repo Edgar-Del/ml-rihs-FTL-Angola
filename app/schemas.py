@@ -5,32 +5,36 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class PredictionInput(BaseModel):
     """Schema para input de predição"""
-    model_config = ConfigDict(populate_by_name=True, extra="forbid", allow_population_by_field_name=True)
+    model_config = ConfigDict(
+        populate_by_name=True,
+        extra="forbid",
+        protected_namespaces=(),
+    )
 
-    price_per_night_usd: float = Field(..., alias="price_per_night_usd", example=150.0)
-    rating: float = Field(..., alias="rating", example=4.2)
-    avaliacao_clientes: float = Field(..., alias="avaliação_clientes", example=8.5)
-    distancia_do_centro_km: float = Field(..., alias="distância_do_centro_km", example=2.5)
-    energia_renovavel: float = Field(..., alias="energia_renovável", example=75.0)
-    gestao_residuos_indice: float = Field(..., alias="gestão_resíduos_índice", example=0.8)
-    consumo_agua_por_hospede: float = Field(..., alias="consumo_água_por_hóspede", example=120.0)
-    carbon_footprint_score: float = Field(..., alias="carbon_footprint_score", example=0.7)
-    reciclagem_score: float = Field(..., alias="reciclagem_score", example=0.9)
-    energia_limpa_score: float = Field(..., alias="energia_limpa_score", example=0.8)
-    water_usage_index: float = Field(..., alias="water_usage_index", example=0.6)
-    sustainability_index: float = Field(..., alias="sustainability_index", example=0.85)
-    eco_impact_index: float = Field(..., alias="eco_impact_index", example=0.75)
-    eco_value_ratio: float = Field(..., alias="eco_value_ratio", example=1.2)
-    sentimento_score: float = Field(..., alias="sentimento_score", example=0.8)
-    eco_keyword_count: int = Field(..., alias="eco_keyword_count", example=5)
-    regiao_encoded: int = Field(..., alias="região_encoded", example=2)
-    possui_selo_sustentavel_encoded: int = Field(..., alias="possui_selo_sustentável_encoded", example=1)
-    sentimento_sustentabilidade_encoded: int = Field(..., alias="sentimento_sustentabilidade_encoded", example=1)
-    price_sust_ratio: float = Field(..., alias="price_sust_ratio", example=1.5)
-    eco_value_score: float = Field(..., alias="eco_value_score", example=0.8)
-    total_sust_score: float = Field(..., alias="total_sust_score", example=0.85)
-    price_category: int = Field(..., alias="price_category", example=2)
-    water_consumption_ratio: float = Field(..., alias="water_consumption_ratio", example=0.7)
+    price_per_night_usd: float = Field(..., alias="price_per_night_usd")
+    rating: float = Field(..., alias="rating")
+    avaliacao_clientes: float = Field(..., alias="avaliação_clientes")
+    distancia_do_centro_km: float = Field(..., alias="distância_do_centro_km")
+    energia_renovavel: float = Field(..., alias="energia_renovável")
+    gestao_residuos_indice: float = Field(..., alias="gestão_resíduos_índice")
+    consumo_agua_por_hospede: float = Field(..., alias="consumo_água_por_hóspede")
+    carbon_footprint_score: float = Field(..., alias="carbon_footprint_score")
+    reciclagem_score: float = Field(..., alias="reciclagem_score")
+    energia_limpa_score: float = Field(..., alias="energia_limpa_score")
+    water_usage_index: float = Field(..., alias="water_usage_index")
+    sustainability_index: float = Field(..., alias="sustainability_index")
+    eco_impact_index: float = Field(..., alias="eco_impact_index")
+    eco_value_ratio: float = Field(..., alias="eco_value_ratio")
+    sentimento_score: float = Field(..., alias="sentimento_score")
+    eco_keyword_count: int = Field(..., alias="eco_keyword_count")
+    regiao_encoded: int = Field(..., alias="região_encoded")
+    possui_selo_sustentavel_encoded: int = Field(..., alias="possui_selo_sustentável_encoded")
+    sentimento_sustentabilidade_encoded: int = Field(..., alias="sentimento_sustentabilidade_encoded")
+    price_sust_ratio: float = Field(..., alias="price_sust_ratio")
+    eco_value_score: float = Field(..., alias="eco_value_score")
+    total_sust_score: float = Field(..., alias="total_sust_score")
+    price_category: int = Field(..., alias="price_category")
+    water_consumption_ratio: float = Field(..., alias="water_consumption_ratio")
 
     def to_feature_dict(self) -> Dict[str, float | int]:
         """Retorna o payload com chaves ASCII prontas para inferência."""
@@ -39,14 +43,16 @@ class PredictionInput(BaseModel):
 
 class PredictionOutput(BaseModel):
     """Schema para output de predição"""
-    prediction: int = Field(..., example=3)
-    probabilities: List[float] = Field(..., example=[0.1, 0.2, 0.3, 0.35, 0.05])
-    prediction_label: str = Field(..., example="Alta Sustentabilidade")
-    model_version: str = Field(..., example="1.0.0")
+    model_config = ConfigDict(protected_namespaces=())
+    prediction: int
+    probabilities: List[float]
+    prediction_label: str
+    model_version: str
 
 
 class HealthResponse(BaseModel):
     """Schema para health check"""
+    model_config = ConfigDict(protected_namespaces=())
     status: str
     model_loaded: bool
     version: str

@@ -1,3 +1,4 @@
+import os
 from copy import deepcopy
 
 import pytest
@@ -33,8 +34,12 @@ def prediction_payload():
     }
 
 
-def test_predict_success(client, prediction_payload):
-    response = client.post("/predict", json=prediction_payload)
+def test_predict_success(client, prediction_payload, api_key):
+    response = client.post(
+        "/predict",
+        json=prediction_payload,
+        headers={"X-API-KEY": api_key},
+    )
     assert response.status_code == 200
     body = response.json()
     assert body["prediction_label"]
@@ -52,16 +57,33 @@ def test_predict_requires_api_key(client, prediction_payload):
     assert response.status_code == 422  # header obrigatório ausente
 
 
+def test_predict_missing_api_key_header(client, prediction_payload):
+    response = client.post(
+        "/predict",
+        json=prediction_payload,
+        headers={"X-API-KEY": "wrong"},
+    )
+    assert response.status_code == 403
+
+
 def test_predict_missing_feature_returns_422(client, prediction_payload):
     invalid_payload = deepcopy(prediction_payload)
     invalid_payload.pop("eco_value_score")
-    response = client.post("/predict", json=invalid_payload)
+    response = client.post(
+        "/predict",
+        json=invalid_payload,
+        headers={"X-API-KEY": os.environ.get("API_KEY", "test-api-key")},
+    )
     assert response.status_code == 422
 
 
 def test_predict_invalid_type_returns_422(client, prediction_payload):
     invalid_payload = deepcopy(prediction_payload)
     invalid_payload["rating"] = "muito bom"
-    response = client.post("/predict", json=invalid_payload)
+    response = client.post(
+        "/predict",
+        json=invalid_payload,
+        headers={"X-API-KEY": os.environ.get("API_KEY", "test-api-key")},
+    )
     assert response.status_code == 422
 

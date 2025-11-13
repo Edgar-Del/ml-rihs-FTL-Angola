@@ -57,6 +57,9 @@ API de inferência em FastAPI que classifica o nível de sustentabilidade de hot
 
 ```
 project_root/
+├── core/
+│   ├── __init__.py
+│   └── settings.py
 ├── app/
 │   ├── config.py
 │   ├── main.py
@@ -69,17 +72,23 @@ project_root/
 │       ├── metrics.py
 │       ├── security.py
 │       └── validation.py
+├── ml/
+│   └── model_loader.py
 ├── models/
 │   ├── baseline/model.pkl
 │   ├── latest/model.pkl
 │   └── metadata.json
 ├── scripts/
-│   └── deploy.sh
+│   ├── deploy.sh
+│   └── validate_env.sh
 ├── tests/
 │   ├── conftest.py
+│   ├── test_endpoints_extra.py
 │   ├── test_health.py
 │   ├── test_model.py
-│   └── test_predict.py
+│   ├── test_predict.py
+│   ├── test_settings.py
+│   └── test_utils_misc.py
 ├── Dockerfile
 ├── requirements.txt
 └── .github/workflows/test.yml
@@ -102,15 +111,28 @@ python3 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
-cp .env.example .env   # (crie este ficheiro com base nas variáveis abaixo)
 ```
 
-`.env` mínimo:
+Crie um `.env` sem aspas ou colchetes, por exemplo:
 
 ```
-API_KEY=insira-uma-chave-secreta
-CORS_ORIGINS=https://painel-sustentavel.org
-MODEL_VERSION=latest
+ENVIRONMENT=dev
+MODEL_REGISTRY_PATH=./models/latest/model.pkl
+METADATA_FILE=./models/metadata.json
+API_KEY=ftl-sustainable-ai-key
+CORS_ORIGINS=https://localhost,http://127.0.0.1:3000,https://painel-sustentavel.org
+LOG_LEVEL=INFO
+APP_NAME=Recomendador Inteligente de Hospedagem Sustentável
+VERSION=1.0.0
+HOST=0.0.0.0
+PORT=8080
+DEBUG=false
+```
+
+Valide a configuração antes de subir a API:
+
+```bash
+./scripts/validate_env.sh
 ```
 
 ---
@@ -133,14 +155,15 @@ Endpoints úteis:
 ## Testes e Qualidade
 
 ```bash
-pytest --cov=app --cov=tests --cov-report=term-missing
+./scripts/validate_env.sh
+pytest --cov=app --cov=tests --cov-fail-under=90 --cov-report=term-missing
 ```
 
-A pipeline de CI (`.github/workflows/test.yml`) garante:
+A pipeline de CI (`.github/workflows/test.yml`) executa:
 
+- Validação do `.env`
 - Instalação de dependências
-- Execução de `pytest` com cobertura
-- Falha de build se cobertura < 90%
+- Execução de `pytest` com cobertura ≥90%
 
 ---
 
@@ -171,7 +194,7 @@ O script:
 
 - Usa Cloud Build para criar a imagem
 - Publica e faz deploy em Cloud Run com autoscaling controlado
-- Injeta `API_KEY` e `MODEL_VERSION` como variáveis de ambiente
+- Injeta `API_KEY`, `MODEL_REGISTRY_PATH` e `METADATA_FILE` como variáveis de ambiente quando necessário
 - Valida o health check automaticamente após o deploy
 
 ---
@@ -187,10 +210,10 @@ O script:
 
 ## Versionamento de Modelos
 
-- Metadados centralizados em `models/metadata.json`
-- Estrutura de pastas `models/<versao>/model.pkl`
-- Fallback automático: `MODEL_VERSION` → `default_version` → `MODEL_FALLBACK_VERSION` → `legacy`
-- Endpoint `/metadata` expõe `trained_at`, métricas e versão activa
+- `MODEL_REGISTRY_PATH` aponta para o artefacto activo (padrão `models/latest/model.pkl`)
+- `ml/model_loader.py` fornece fallback automático para `models/baseline/model.pkl`
+- `models/metadata.json` armazena métricas e metadados consumidos pelos endpoints
+- `/metadata` expõe a versão e métricas carregadas, permitindo observabilidade
 
 ---
 
