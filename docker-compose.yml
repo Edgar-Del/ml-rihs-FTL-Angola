@@ -1,0 +1,215 @@
+services:
+  # ============================================
+  # API Principal - FastAPI
+  # ============================================
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+    image: rihs-api:latest
+    container_name: rihs-api
+    ports:
+      - "${PORT:-8000}:8080"
+    environment:
+      # Configurações obrigatórias
+      - API_KEY=${API_KEY:-test-api-key}
+      
+      # Caminhos dos modelos
+      - MODEL_REGISTRY_PATH=${MODEL_REGISTRY_PATH:-./models/latest/sustainability_classification_pipeline.pkl}
+      - METADATA_FILE=${METADATA_FILE:-./models/metadata.json}
+      
+      # Configurações de CORS
+      - CORS_ORIGINS=${CORS_ORIGINS:-*}
+      
+      # Configurações de logging
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - DEBUG=${DEBUG:-false}
+      
+      # Configurações da aplicação
+      - APP_NAME=Recomendador Inteligente de Hospedagem Sustentável
+      - VERSION=1.0.0
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      
+      # Configurações do servidor
+      - HOST=0.0.0.0
+      - PORT=8080
+      
+      # Python
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    volumes:
+      # Montar modelos do host (opcional, para desenvolvimento)
+      # Descomente para usar modelos do host em vez dos do container
+      # - ./models:/app/models:ro
+      
+      # Montar logs
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - rihs-network
+      - monitoring-network
+    labels:
+      - "com.rihs.service=api"
+      - "com.rihs.version=1.0.0"
+      - "com.rihs.description=API de Classificação de Sustentabilidade"
+
+  # ============================================
+  # Prometheus - Coleta de Métricas
+  # ============================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: rihs-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - monitoring-network
+    labels:
+      - "com.rihs.service=prometheus"
+      - "com.rihs.description=Coleta de métricas da API"
+
+  # ============================================
+  # Grafana - Visualização de Métricas
+  # ============================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: rihs-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3001
+      - GF_INSTALL_PLUGINS=
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - monitoring-network
+    labels:
+      - "com.rihs.service=grafana"
+      - "com.rihs.description=Visualização de métricas e dashboards"
+
+  # ============================================
+  # PostgreSQL - Banco de Dados (Futuro)
+  # Descomente quando necessário para integração futura
+  # ============================================
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: rihs-postgres
+  #   environment:
+  #     - POSTGRES_DB=${POSTGRES_DB:-rihs_db}
+  #     - POSTGRES_USER=${POSTGRES_USER:-rihs_user}
+  #     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-rihs_password}
+  #     - PGDATA=/var/lib/postgresql/data/pgdata
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-rihs_user}"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   networks:
+  #     - rihs-network
+  #   labels:
+  #     - "com.rihs.service=postgres"
+  #     - "com.rihs.description=Banco de dados PostgreSQL"
+
+  # ============================================
+  # PgAdmin - Interface Web para PostgreSQL (Futuro)
+  # Descomente quando PostgreSQL estiver ativo
+  # ============================================
+  # pgadmin:
+  #   image: dpage/pgadmin4:latest
+  #   container_name: rihs-pgadmin
+  #   environment:
+  #     - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL:-admin@rihs.local}
+  #     - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD:-admin}
+  #     - PGADMIN_CONFIG_SERVER_MODE=False
+  #   ports:
+  #     - "5050:80"
+  #   volumes:
+  #     - pgadmin-data:/var/lib/pgadmin
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - rihs-network
+  #   labels:
+  #     - "com.rihs.service=pgadmin"
+  #     - "com.rihs.description=Interface web para PostgreSQL"
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  rihs-network:
+    driver: bridge
+    name: rihs-network
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+  
+  monitoring-network:
+    driver: bridge
+    name: rihs-monitoring
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  prometheus-data:
+    driver: local
+    name: rihs-prometheus-data
+  
+  grafana-data:
+    driver: local
+    name: rihs-grafana-data
+  
+  # Descomente quando PostgreSQL estiver ativo
+  # postgres-data:
+  #   driver: local
+  #   name: rihs-postgres-data
+  
+  # pgadmin-data:
+  #   driver: local
+  #   name: rihs-pgadmin-data

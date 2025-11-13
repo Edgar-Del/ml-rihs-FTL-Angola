@@ -140,15 +140,15 @@ Valide a configuração antes de subir a API:
 ## Execução
 
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
 Endpoints úteis:
 
-- `http://localhost:8080/` – metadata do serviço
-- `http://localhost:8080/health` – health check (público)
-- `http://localhost:8080/predict` – classificação (requer `X-API-KEY`)
-- `http://localhost:8080/metrics` – métricas Prometheus
+- `http://localhost:8000/` – metadata do serviço
+- `http://localhost:8000/health` – health check (público)
+- `http://localhost:8000/predict` – classificação (requer `X-API-KEY`)
+- `http://localhost:8000/metrics` – métricas Prometheus
 
 ---
 

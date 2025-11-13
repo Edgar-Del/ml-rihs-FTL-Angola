@@ -1,0 +1,62 @@
+version: '3.8'
+
+# Docker Compose para produção
+# Uso: docker-compose -f docker-compose.prod.yml up -d
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: rihs-api:prod
+    container_name: rihs-api-prod
+    ports:
+      - "8080:8080"
+    environment:
+      # IMPORTANTE: Configure estas variáveis via .env ou secrets
+      - API_KEY=${API_KEY}
+      - MODEL_REGISTRY_PATH=./models/latest/sustainability_classification_pipeline.pkl
+      - METADATA_FILE=./models/metadata.json
+      - CORS_ORIGINS=${CORS_ORIGINS:-https://painel-sustentavel.org}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - DEBUG=false
+      - ENVIRONMENT=production
+      - HOST=0.0.0.0
+      - PORT=8080
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    volumes:
+      # Em produção, modelos devem estar no container
+      # Não montar volumes do host por segurança
+      - ./logs:/app/logs
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    networks:
+      - rihs-network
+    labels:
+      - "com.rihs.service=api"
+      - "com.rihs.environment=production"
+      - "com.rihs.version=1.0.0"
+
+networks:
+  rihs-network:
+    driver: bridge
+

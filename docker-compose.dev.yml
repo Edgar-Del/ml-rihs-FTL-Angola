@@ -1,0 +1,43 @@
+version: '3.8'
+
+# Docker Compose para desenvolvimento
+# Uso: docker-compose -f docker-compose.dev.yml up
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: rihs-api:dev
+    container_name: rihs-api-dev
+    ports:
+      - "8080:8080"
+    environment:
+      - API_KEY=dev-api-key
+      - MODEL_REGISTRY_PATH=./models/latest/sustainability_classification_pipeline.pkl
+      - METADATA_FILE=./models/metadata.json
+      - CORS_ORIGINS=*
+      - LOG_LEVEL=DEBUG
+      - DEBUG=true
+      - ENVIRONMENT=development
+      - HOST=0.0.0.0
+      - PORT=8080
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Montar código para hot-reload (se usar --reload no uvicorn)
+      - ./app:/app/app:ro
+      - ./core:/app/core:ro
+      - ./ml:/app/ml:ro
+      # Montar modelos do host para desenvolvimento
+      - ./models:/app/models:ro
+      # Montar logs
+      - ./logs:/app/logs
+    restart: unless-stopped
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]
+    networks:
+      - rihs-network
+
+networks:
+  rihs-network:
+    driver: bridge
+
