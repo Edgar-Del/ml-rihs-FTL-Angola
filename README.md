@@ -7,6 +7,7 @@ API de inferência em FastAPI que classifica o nível de sustentabilidade de hot
 ## Estado Actual do Projecto
 
 **✅ Implementado**
+
 - API FastAPI (`/`, `/health`, `/predict`, `/model/info`, `/metadata`, `/metrics`)
 - Normalização ASCII das features e validação obrigatória antes da inferência
 - Modelo `scikit-learn` serializado com `joblib` e carregamento resiliente (metadata + fallback)
@@ -17,6 +18,7 @@ API de inferência em FastAPI que classifica o nível de sustentabilidade de hot
 - Workflow de CI (`.github/workflows/test.yml`) executa lint/test em cada push
 
 **🚧 Próximos Passos**
+
 - Pipeline de dados (Airflow) e tracking de experimentos (MLflow)
 - Frontend (Next.js) e dashboards interactivos
 - Integração com bases externas e ingestão contínua (TripAdvisor, Booking, EcoBnb)
@@ -104,6 +106,7 @@ cp .env.example .env   # (crie este ficheiro com base nas variáveis abaixo)
 ```
 
 `.env` mínimo:
+
 ```
 API_KEY=insira-uma-chave-secreta
 CORS_ORIGINS=https://painel-sustentavel.org
@@ -119,6 +122,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 ```
 
 Endpoints úteis:
+
 - `http://localhost:8080/` – metadata do serviço
 - `http://localhost:8080/health` – health check (público)
 - `http://localhost:8080/predict` – classificação (requer `X-API-KEY`)
@@ -133,6 +137,7 @@ pytest --cov=app --cov=tests --cov-report=term-missing
 ```
 
 A pipeline de CI (`.github/workflows/test.yml`) garante:
+
 - Instalação de dependências
 - Execução de `pytest` com cobertura
 - Falha de build se cobertura < 90%
@@ -163,6 +168,7 @@ PROJECT_ID=ftl-tourism-ai API_KEY=chave-prod ./scripts/deploy.sh prod v1.2.0
 ```
 
 O script:
+
 - Usa Cloud Build para criar a imagem
 - Publica e faz deploy em Cloud Run com autoscaling controlado
 - Injeta `API_KEY` e `MODEL_VERSION` como variáveis de ambiente
@@ -210,10 +216,11 @@ O script:
 ## Equipa
 
 **Grupo 1 - Bootcamp Frontier Tech Leaders UNDP Angola 2025**
+
 - Arsénio Eurico Muassangue
 - Edgar Delfino Tchissingui
 - Francisco Adão Vika Manuel
-- Raquel de Jesus
+- Raquel de Jesus João
 
 ---
 

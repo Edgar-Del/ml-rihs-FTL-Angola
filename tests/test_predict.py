@@ -43,11 +43,12 @@ def test_predict_success(client, prediction_payload):
 
 
 def test_predict_requires_api_key(client, prediction_payload):
-    response = client.post(
-        "/predict",
-        json=prediction_payload,
-        headers={},  # remove API key default
-    )
+    # Cria um cliente novo sem header padrão para simular ausência do X-API-KEY
+    from app.main import app
+    from fastapi.testclient import TestClient
+
+    client_no_key = TestClient(app)
+    response = client_no_key.post("/predict", json=prediction_payload)
     assert response.status_code == 422  # header obrigatório ausente
 
 

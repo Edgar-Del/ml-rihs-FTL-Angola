@@ -105,6 +105,9 @@ async def predict(
         logger.info(f"Predição realizada: {prediction_result['prediction_label']}")
         
         return PredictionOutput(**prediction_result)
+    except HTTPException as http_exc:
+        # Propaga HTTPException sem mascarar o status code
+        raise http_exc
     except ValueError as err:
         logger.warning("Payload inválido recebido: %s", err)
         raise HTTPException(status_code=400, detail=str(err)) from err

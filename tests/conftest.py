@@ -1,14 +1,19 @@
 import os
 from importlib import reload
+from pathlib import Path
 from typing import Generator
 
 import pytest
 from fastapi.testclient import TestClient
 
-# Configura API_KEY antes de carregar módulos da aplicação
+# Configura variáveis antes de carregar módulos da aplicação
 os.environ.setdefault("API_KEY", "test-api-key")
+# Força uso de caminhos absolutos para o registry e metadata durante os testes
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+os.environ.setdefault("MODEL_REGISTRY_PATH", str(PROJECT_ROOT / "models"))
+os.environ.setdefault("METADATA_FILE", str(PROJECT_ROOT / "models" / "metadata.json"))
 
-# Recarrega settings para garantir que a API key de teste seja utilizada
+# Recarrega settings para garantir que as variáveis de teste sejam utilizadas
 from app import config  # noqa: E402
 
 reload(config)

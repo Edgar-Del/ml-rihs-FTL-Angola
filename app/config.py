@@ -1,10 +1,12 @@
 from typing import List
 
-from pydantic import BaseSettings, Field, field_validator
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
     """Configurações da app"""
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
     
     # Application
     APP_NAME: str = "Recomendador Inteligente de Hospedagem Sustentável"
@@ -31,9 +33,6 @@ class Settings(BaseSettings):
     # CORS
     CORS_ORIGINS: List[str] = Field(default_factory=lambda: ["https://painel-sustentavel.org"])
     
-    class Config:
-        env_file = ".env"
-
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
     def _split_origins(cls, value):
