@@ -1,4 +1,4 @@
-# 🏨 Recomendador Inteligente de Hospedagem Sustentável (RIHS)
+# Recomendador Inteligente de Hospedagem Sustentável (RIHS)
 
 > **API de classificação de sustentabilidade para hotéis angolanos**  
 > Alinhado aos ODS 8, 12 e 13 | Bootcamp Frontier Tech Leaders UNDP Angola 2025
@@ -8,11 +8,11 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104-green.svg)](https://fastapi.tiangolo.com/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**🌐 Deployment em Produção:** [https://rihs-ftl-undp.ew.r.appspot.com/](https://rihs-ftl-undp.ew.r.appspot.com/)
+**Deployment em Produção:** [https://rihs-ftl-undp.ew.r.appspot.com/](https://rihs-ftl-undp.ew.r.appspot.com/)
 
 ---
 
-## 📋 Índice
+## Índice
 
 - [Visão Geral](#-visão-geral)
 - [Sobre o Projeto](#-sobre-o-projeto)
@@ -33,11 +33,11 @@
 
 ---
 
-## 🎯 Visão Geral
+## Visão Geral
 
 O **Recomendador Inteligente de Hospedagem Sustentável (RIHS)** é uma API inteligente baseada em Machine Learning que classifica o nível de sustentabilidade de hotéis angolanos com base em indicadores ambientais, sociais e económicos. O sistema utiliza técnicas avançadas de IA para processar dados multiestruturados e fornecer recomendações personalizadas que promovem o turismo sustentável e consciente.
 
-### 🚀 Características Principais
+### Características Principais
 
 - ✅ **Classificação Automática** de sustentabilidade usando modelos de ML (XGBoost, Random Forest)
 - ✅ **API RESTful** completa com FastAPI e documentação automática
@@ -50,7 +50,7 @@ O **Recomendador Inteligente de Hospedagem Sustentável (RIHS)** é uma API inte
 
 ---
 
-## 📖 Sobre o Projeto
+## 📖 Sobre o Projecto
 
 ### Contextualização do Problema
 
@@ -74,7 +74,7 @@ Desenvolver um sistema inteligente de recomendação, baseado em machine learnin
 
 ## 🌍 Objectivos de Desenvolvimento Sustentável
 
-Este projeto está alinhado com os seguintes ODS:
+Este projecto está alinhado com os seguintes ODS:
 
 | ODS | Descrição | Contribuição do Projeto |
 |-----|-----------|------------------------|
@@ -110,7 +110,7 @@ Este projeto está alinhado com os seguintes ODS:
 
 ---
 
-## 🏗️ Arquitetura Técnica
+## Arquitetura Técnica
 
 ```
 ┌───────────────────────────────────────────────────────────────┐
@@ -162,9 +162,9 @@ Este projeto está alinhado com os seguintes ODS:
 
 ---
 
-## 💼 Casos de Uso Práticos
+## Casos de Uso Práticos
 
-### 1. 🏨 Plataformas de Reserva Online
+### 1. Plataformas de Reserva Online
 
 **Exemplo:** Booking.com, Airbnb, Decolar.com
 
@@ -197,7 +197,7 @@ Este projeto está alinhado com os seguintes ODS:
 }
 ```
 
-### 2. 🏛️ Órgãos Governamentais e Certificadoras
+### 2. Órgãos Governamentais e Certificadoras
 
 **Exemplo:** Ministério do Turismo, CERTIFIQUE Sustainable
 
@@ -209,9 +209,9 @@ Este projeto está alinhado com os seguintes ODS:
 - Escalar programa de certificações
 - Monitorar contínuo de hotéis já certificados
 
-### 3. 📊 Agências de Desenvolvimento Regional
+### 3. Agências de Desenvolvimento Regional
 
-**Exemplo:** EMBRATUR, Secretarias Estaduais de Turismo
+**Exemplo:** ONGs, Gabinetes Provinciais de Turismo, 
 
 **Caso de Uso:** Mapeamento do perfil sustentável do destino
 
@@ -221,9 +221,9 @@ Este projeto está alinhado com os seguintes ODS:
 - Direcionar políticas públicas e incentivos
 - Desenvolver rotas turísticas sustentáveis
 
-### 4. 🏢 Redes Hoteleiras
+### 4. Redes Hoteleiras
 
-**Exemplo:** Marriott, Hilton, Accor
+**Exemplo:** Chick-Chick, Hotel UI, etc...
 
 **Caso de Uso:** Benchmarking interno e melhoria contínua
 
@@ -233,9 +233,9 @@ Este projeto está alinhado com os seguintes ODS:
 - Definir metas de sustentabilidade mensuráveis
 - Reportar ESG para investidores
 
-### 5. 🌱 Startups de Turismo Sustentável
+### 5. Startups de Turismo Sustentável
 
-**Exemplo:** Ecobnb, Responsible Travel
+**Exemplo:** Ecobnb
 
 **Caso de Uso:** Diferenciação no mercado
 
@@ -245,7 +245,7 @@ Este projeto está alinhado com os seguintes ODS:
 - Construir confiança com o consumidor
 - Atrair turistas conscientes
 
-### 6. 📱 Aplicativos de Viagem
+### 6. Aplicativos de Viagem
 
 **Exemplo:** TripAdvisor, Google Travel
 
@@ -257,7 +257,7 @@ Este projeto está alinhado com os seguintes ODS:
 - Recomendações personalizadas por perfil eco
 - Gamificação (pontos por escolhas sustentáveis)
 
-### 7. 🎓 Projeto Acadêmico/Educacional
+### 7. Projecto Acadêmico/Educacional
 
 **Caso de Uso:** Demonstração prática de ML aplicado
 
@@ -266,18 +266,9 @@ Este projeto está alinhado com os seguintes ODS:
 - Base para pesquisas acadêmicas em turismo sustentável
 - Material para workshops e palestras
 
-### 8. 📈 Consultorias Especializadas
-
-**Caso de Uso:** Ferramenta para consultorias em sustentabilidade
-
-- Avaliação rápida de clientes hoteleiros
-- Data-driven insights para recomendações
-- Relatórios automatizados de desempenho
-- Análise comparativa do mercado
-
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 ### Core
 - **Python 3.11** - Linguagem principal
@@ -312,7 +303,7 @@ Este projeto está alinhado com os seguintes ODS:
 
 ---
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 FinalProjectFTL/
@@ -385,7 +376,7 @@ FinalProjectFTL/
 
 ---
 
-## 🚀 Instalação e Configuração
+## Instalação e Configuração
 
 ### Pré-requisitos
 
@@ -486,7 +477,7 @@ docker-compose -f docker-compose.dev.yml up
 
 ---
 
-## 📡 Uso da API
+## Uso da API
 
 ### Exemplo de Requisição
 
@@ -568,7 +559,7 @@ print(response.json())
 
 ### Google Cloud Platform (Cloud Run)
 
-O projeto está deployado em produção no GCP Cloud Run:
+O projecto está deployado em produção no GCP Cloud Run:
 
 **🌐 URL de Produção:** [https://rihs-ftl-undp.ew.r.appspot.com/](https://rihs-ftl-undp.ew.r.appspot.com/)
 
@@ -728,7 +719,7 @@ O projeto está aberto a contribuições! Áreas de interesse:
 
 ## 📄 Licença
 
-Este projeto foi desenvolvido como parte do **Bootcamp Frontier Tech Leaders UNDP Angola 2025**.
+Este projecto foi desenvolvido como parte do **Bootcamp Frontier Tech Leaders UNDP Angola 2025**.
 
 ---
 
@@ -742,7 +733,7 @@ Este projeto foi desenvolvido como parte do **Bootcamp Frontier Tech Leaders UND
 
 ## 🙏 Agradecimentos
 
-Agradecemos ao **UNDP Angola** e ao programa **Frontier Tech Leaders** pela oportunidade de desenvolver este projeto e contribuir para o desenvolvimento sustentável do turismo em Angola.
+Agradecemos ao **UNDP Angola** e ao programa **Frontier Tech Leaders** pela oportunidade de desenvolver este projecto e contribuir para o desenvolvimento sustentável do turismo em Angola.
 
 ---
 
